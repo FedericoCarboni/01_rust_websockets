@@ -4,10 +4,10 @@ const sendMsgBtn = document.querySelector('#chatform');
 sendMsgBtn.addEventListener('submit', (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
-    const v = text.value;
+    const v = JSON.stringify({message:text.value});
     text.value = "";
     connection.send(v);
-    sentMessage(v);
+    sentMessage("⬆️ " + v);
 });
 let connection;
 const addLog = (message) => {
@@ -24,7 +24,7 @@ const sentMessage = (message) => {
 };
 const handleMessage = (message) => {
     const msg = document.createElement('div');
-    msg.textContent = message;
+    msg.textContent = "⬇️ "+message;
     msg.setAttribute('class', 'message');
     messages.appendChild(msg);
 };
@@ -35,7 +35,7 @@ connectButton.addEventListener('click', () => {
         connection = null;
         return;
     }
-    connection = new WebSocket(`ws://${window.location.host}/ws/`);
+    connection = new WebSocket(`ws://${window.location.host}/ws`);
     connection.addEventListener('open', () => {
         connectButton.textContent = "Disconnect";
         addLog('Connected');
