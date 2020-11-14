@@ -9,11 +9,17 @@ use serde_json as json;
 
 struct WSHandler {}
 
+fn read_temp() -> String {
+    let file: String = std::fs::read_to_string("/sys/bus/w1/devices/28-0316a2d19bff/w1_slave").unwrap();
+    file.split("t=").last().unwrap().to_string()
+}
+
 impl Actor for WSHandler {
     type Context = ws::WebsocketContext<Self>;
     
     fn started(&mut self, ctx: &mut Self::Context) {
         ctx.text("{\"message\":\"Hello from Rust!\"}");
+        ctx.text(format!("{{\"message\":{}}}", read_temp()));
     }
 }
 
@@ -68,7 +74,7 @@ async fn main() -> io::Result<()> {
             .service(Files::new("/", "static/").index_file("index.html"))
     })
     // apri il server su localhost porta 8080
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
